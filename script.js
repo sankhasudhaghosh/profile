@@ -1,4 +1,4 @@
-const words = ["Senior Software Engineer", "Tech Mentor", "System Architect", "Problem Solver"];
+const words = ["Program Manager", "Technical Problem Solver", "Operations Leader", "Automation Expert"];
 let i = 0;
 let timer;
 
