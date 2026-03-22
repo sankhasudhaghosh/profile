@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name | Futuristic Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">PORTFOLIO<span class="neon-text">_OS</span></div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#journey">Journey</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#achievements">Achievements</a></li>
+            <li><a href="#contact">Connect</a></li>
+        </ul>
+    </nav>
+
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <h1>HELLO, I'M <span class="neon-text">YOUR NAME</span></h1>
+            <h2 id="typewriter"></h2>
+            <p>Showcasing 5+ years of driving innovation and building scalable solutions.</p>
+            <div class="social-links">
+                <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:your.email@gmail.com"><i class="fas fa-envelope"></i></a>
+                <a href="https://github.com/YOUR_GITHUB" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+            <a href="#contact" class="btn">Request Mentorship / Connect</a>
+        </div>
+    </header>
+
+    <section id="journey" class="section">
+        <h2 class="section-title">Professional <span class="neon-text">Journey</span></h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <h3>Senior Developer @ TechCorp</h3>
+                <span>2021 - Present</span>
+                <p>Led a team of 5 engineers to build a highly scalable microservices architecture. Improved system efficiency by 40%.</p>
+            </div>
+            <div class="timeline-item">
+                <h3>Software Engineer @ InnovateInc</h3>
+                <span>2018 - 2021</span>
+                <p>Developed full-stack web applications. Spearheaded the migration of legacy monolithic systems to AWS cloud.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="section">
+        <h2 class="section-title">Tech <span class="neon-text">Stack</span></h2>
+        <div class="skills-grid">
+            <div class="skill-card">JavaScript / TS</div>
+            <div class="skill-card">React & Node.js</div>
+            <div class="skill-card">Python & AI/ML</div>
+            <div class="skill-card">AWS / Docker</div>
+            <div class="skill-card">System Architecture</div>
+            <div class="skill-card">Agile Leadership</div>
+        </div>
+    </section>
+
+    <section id="achievements" class="section">
+        <h2 class="section-title">Achievements & <span class="neon-text">Certifications</span></h2>
+        <div class="cards-container">
+            <div class="card">
+                <i class="fas fa-award icon"></i>
+                <h3>AWS Certified Solutions Architect</h3>
+                <p>Achieved professional-level certification demonstrating expertise in designing distributed systems.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-trophy icon"></i>
+                <h3>Hackathon Winner 2023</h3>
+                <p>Won 1st place among 50 teams for building an AI-driven accessibility tool.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <h2 class="section-title">Initiate <span class="neon-text">Connection</span></h2>
+        <p style="text-align: center; margin-bottom: 2rem;">Looking for mentorship, collaboration, or have feedback? Send a transmission.</p>
+        
+        <form action="https://formspree.io/f/YOUR_FORMSPREE_ENDPOINT" method="POST" class="contact-form">
+            <input type="text" name="name" placeholder="Enter Designation/Name" required>
+            <input type="email" name="email" placeholder="Enter Comms Link (Email)" required>
+            <select name="subject" required>
+                <option value="" disabled selected>Select Transmission Type</option>
+                <option value="mentorship">Mentorship Request</option>
+                <option value="feedback">Feedback Session</option>
+                <option value="opportunity">Career Opportunity</option>
+                <option value="other">Other</option>
+            </select>
+            <textarea name="message" rows="5" placeholder="Enter Message Data..." required></textarea>
+            <button type="submit" class="btn">Transmit Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Your Name. All systems operational.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
