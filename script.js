@@ -1,4 +1,38 @@
-// --- THEME TOGGLE LOGIC ---
+// --- 1. TYPEWRITER EFFECT ---
+const words = ["Strategic Operations", "System Architect", "Technical Problem Solver", "Data-Driven Innovator"];
+let i = 0; let timer;
+
+function typingEffect() {
+    let word = words[i].split("");
+    var loopTyping = function() {
+        if (word.length > 0) {
+            document.getElementById('typewriter').innerHTML += word.shift();
+        } else {
+            setTimeout(deletingEffect, 2000); return false;
+        };
+        timer = setTimeout(loopTyping, 100);
+    };
+    loopTyping();
+}
+
+function deletingEffect() {
+    let word = words[i].split("");
+    var loopDeleting = function() {
+        if (word.length > 0) {
+            word.pop();
+            document.getElementById('typewriter').innerHTML = word.join("");
+        } else {
+            if (words.length > (i + 1)) i++; else i = 0;
+            typingEffect(); return false;
+        };
+        timer = setTimeout(loopDeleting, 50);
+    };
+    loopDeleting();
+}
+typingEffect();
+
+
+// --- 2. THEME TOGGLE LOGIC ---
 const themeSelect = document.getElementById('theme-toggle');
 
 function applyTheme(theme) {
@@ -10,39 +44,56 @@ function applyTheme(theme) {
     }
 }
 
-// Check local storage on load
-const savedTheme = localStorage.getItem('portfolio-theme') || 'system';
+const savedTheme = localStorage.getItem('spatial-theme') || 'system';
 themeSelect.value = savedTheme;
 applyTheme(savedTheme);
 
-// Listen for dropdown changes
 themeSelect.addEventListener('change', (e) => {
-    localStorage.setItem('portfolio-theme', e.target.value);
+    localStorage.setItem('spatial-theme', e.target.value);
     applyTheme(e.target.value);
 });
 
-// Listen for system theme changes if set to system
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if (themeSelect.value === 'system') applyTheme('system');
 });
 
 
-// --- "ABOUT YOU" VISITOR TRACKER LOGIC ---
-document.addEventListener('DOMContentLoaded', async () => {
+// --- 3. SCROLL REVEAL ANIMATION (Apple/VisionOS Feel) ---
+function reveal() {
+    var reveals = document.querySelectorAll(".reveal");
+    for (var j = 0; j < reveals.length; j++) {
+        var windowHeight = window.innerHeight;
+        var elementTop = reveals[j].getBoundingClientRect().top;
+        var elementVisible = 100; // Trigger threshold
+        if (elementTop < windowHeight - elementVisible) {
+            reveals[j].classList.add("active");
+        }
+    }
+}
+window.addEventListener("scroll", reveal);
+reveal(); // Trigger once on initial load
+
+
+// --- 4. INTERACTIVE "ABOUT YOU" TRACKER ---
+document.getElementById('reveal-btn').addEventListener('click', async function() {
+    const terminal = document.getElementById('terminal-screen');
+    terminal.style.display = 'block';
+    terminal.classList.add('fade-in');
     
-    // 1. Get Screen & Theme Data
+    this.disabled = true;
+    this.textContent = "Running Diagnostics... ⏳";
+
+    // Client-side DOM/Window data
     document.getElementById('v-height').textContent = window.screen.height;
     document.getElementById('v-width').textContent = window.screen.width;
-    document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "landscape 🖥️" : "portrait 📱";
-    document.getElementById('v-theme').textContent = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+    document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "Landscape" : "Portrait";
+    document.getElementById('v-theme').textContent = window.matchMedia('(prefers-color-scheme: dark)').matches ? "Dark" : "Light";
 
-    // 2. Get OS & Browser (Basic detection)
-    let os = "Unknown OS";
-    let browser = "Unknown Browser";
+    // Basic User Agent Parsing
+    let os = "Unknown OS", browser = "Unknown Browser";
     const ua = navigator.userAgent;
-    
     if (ua.indexOf("Win") != -1) os = "Windows";
-    if (ua.indexOf("Mac") != -1) os = "Mac/Apple";
+    if (ua.indexOf("Mac") != -1) os = "macOS/Apple";
     if (ua.indexOf("Linux") != -1) os = "Linux";
     if (ua.indexOf("Android") != -1) os = "Android";
     if (ua.indexOf("like Mac") != -1) os = "iOS";
@@ -55,34 +106,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('v-os').textContent = os;
     document.getElementById('v-browser').textContent = browser;
 
-    // 3. Get Network Speed (If supported)
+    // Network API
     if (navigator.connection) {
         document.getElementById('v-speed').textContent = navigator.connection.downlink + " mbps";
         document.getElementById('v-connection').textContent = navigator.connection.effectiveType;
     } else {
         document.getElementById('v-speed').textContent = "Unknown";
-        document.getElementById('v-connection').textContent = "Wi-Fi/Broadband";
+        document.getElementById('v-connection').textContent = "Standard";
     }
 
-    // 4. Get Battery (If supported)
+    // Battery API
     if (navigator.getBattery) {
-        navigator.getBattery().then(battery => {
+        try {
+            const battery = await navigator.getBattery();
             document.getElementById('v-battery').textContent = Math.round(battery.level * 100) + "%";
-            document.getElementById('v-charging').textContent = battery.charging ? "charging" : "not charging";
-        });
+            document.getElementById('v-charging').textContent = battery.charging ? "Charging🔌" : "Discharging🔋";
+        } catch(e) {
+             document.getElementById('v-battery').textContent = "Hidden";
+             document.getElementById('v-charging').textContent = "Hidden";
+        }
     } else {
-        document.getElementById('v-battery').textContent = "Unknown";
-        document.getElementById('v-charging').textContent = "Unknown";
+        document.getElementById('v-battery').textContent = "Not Supported";
+        document.getElementById('v-charging').textContent = "N/A";
     }
 
-    // 5. Fetch IP & Location Data (Using a free API)
+    // External IP/Geo API Call
     try {
         const response = await fetch('https://ipinfo.io/json');
         const data = await response.json();
         
         document.getElementById('v-ip').textContent = data.ip || "Hidden";
         document.getElementById('v-isp').textContent = data.org || "Unknown ISP";
-        document.getElementById('v-city').textContent = `${data.city}, ${data.region}, ${data.country}`;
+        document.getElementById('v-city').textContent = `${data.city}, ${data.region}`;
         document.getElementById('v-zip').textContent = data.postal || "Unknown";
         
         if(data.loc) {
@@ -95,4 +150,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('v-isp').textContent = "Unknown";
         document.getElementById('v-city').textContent = "Unknown Location";
     }
+
+    this.textContent = "Scan Complete ✅";
 });
