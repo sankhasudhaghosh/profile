@@ -9,7 +9,7 @@
     
     /* Typography */
     --font-heading: 'Montserrat', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
     --font-mono: 'Courier New', Courier, monospace;
 }
 
@@ -33,8 +33,8 @@ body {
 /* Cinematic Background Fade */
 .hero-bg {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    /* REPLACE THIS LINK WITH YOUR LANDSCAPE PHOTO */
     background: url('IMG_20221004_214124.jpg') center/cover no-repeat;
+    background-color: var(--bg-color); /* Fallback color */
     z-index: -2; transition: opacity 0.1s ease-out;
 }
 .hero-overlay {
@@ -82,8 +82,16 @@ h3 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0.8rem;}
 .section-title { font-size: 3rem; margin-bottom: 4rem; position: relative; display: inline-block; letter-spacing: 1px;}
 .section-title::after { content: ''; display: block; width: 60px; height: 4px; background: var(--accent-red); margin-top: 15px;}
 
-/* Hero Section */
-.hero { min-height: 85vh; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 4rem;}
+/* Hero Section ALWAYS FADES IN */
+.hero { 
+    min-height: 85vh; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 4rem;
+    animation: fadeUpHero 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes fadeUpHero {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .type-box { height: 24px; color: var(--text-primary); margin-bottom: 1.5rem; font-weight: 700; font-family: var(--font-mono); font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
 
 .social-links { margin-top: 3.5rem; display: flex; gap: 2rem; }
@@ -142,12 +150,12 @@ h3 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0.8rem;}
     gap: 15px;
     margin-top: 2rem;
 }
-.gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } /* Tighter grid for many items */
+.gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 
 .doc-img { 
     width: 100%; 
-    height: 120px; /* Forces all images to be the exact same height */
-    object-fit: cover; /* Crops intelligently so it doesn't squish */
+    height: 120px;
+    object-fit: cover; 
     object-position: top;
     border: 1px solid var(--border-color); 
     filter: grayscale(100%); transition: 0.3s;
