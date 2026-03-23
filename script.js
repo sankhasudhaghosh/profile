@@ -1,5 +1,5 @@
 // --- 1. TYPEWRITER EFFECT ---
-const words = ["Strategic Operations", "System Architect", "Technical Problem Solver", "Data-Driven Innovator"];
+const words = ["> ARCHITECTING SCALE", "> ELIMINATING INEFFICIENCY", "> DRIVING GLOBAL COMPLIANCE", "> ACCELERATING REVENUE"];
 let i = 0; let timer;
 
 function typingEffect() {
@@ -10,7 +10,7 @@ function typingEffect() {
         } else {
             setTimeout(deletingEffect, 2000); return false;
         };
-        timer = setTimeout(loopTyping, 100);
+        timer = setTimeout(loopTyping, 50); 
     };
     loopTyping();
 }
@@ -25,12 +25,11 @@ function deletingEffect() {
             if (words.length > (i + 1)) i++; else i = 0;
             typingEffect(); return false;
         };
-        timer = setTimeout(loopDeleting, 50);
+        timer = setTimeout(loopDeleting, 30);
     };
     loopDeleting();
 }
 typingEffect();
-
 
 // --- 2. THEME TOGGLE LOGIC ---
 const themeSelect = document.getElementById('theme-toggle');
@@ -44,12 +43,12 @@ function applyTheme(theme) {
     }
 }
 
-const savedTheme = localStorage.getItem('spatial-theme') || 'system';
+const savedTheme = localStorage.getItem('porsche-theme') || 'system';
 themeSelect.value = savedTheme;
 applyTheme(savedTheme);
 
 themeSelect.addEventListener('change', (e) => {
-    localStorage.setItem('spatial-theme', e.target.value);
+    localStorage.setItem('porsche-theme', e.target.value);
     applyTheme(e.target.value);
 });
 
@@ -57,88 +56,81 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
     if (themeSelect.value === 'system') applyTheme('system');
 });
 
-
-// --- 3. SCROLL REVEAL ANIMATION (Apple/VisionOS Feel) ---
+// --- 3. SCROLL REVEAL ANIMATION ---
 function reveal() {
     var reveals = document.querySelectorAll(".reveal");
     for (var j = 0; j < reveals.length; j++) {
         var windowHeight = window.innerHeight;
         var elementTop = reveals[j].getBoundingClientRect().top;
-        var elementVisible = 100; // Trigger threshold
+        var elementVisible = 100; 
         if (elementTop < windowHeight - elementVisible) {
             reveals[j].classList.add("active");
         }
     }
 }
 window.addEventListener("scroll", reveal);
-reveal(); // Trigger once on initial load
+reveal();
 
-
-// --- 4. INTERACTIVE "ABOUT YOU" TRACKER ---
+// --- 4. INTERACTIVE TELEMETRY DASHBOARD ---
 document.getElementById('reveal-btn').addEventListener('click', async function() {
     const terminal = document.getElementById('terminal-screen');
     terminal.style.display = 'block';
     terminal.classList.add('fade-in');
     
     this.disabled = true;
-    this.textContent = "Running Diagnostics... ⏳";
+    this.textContent = "DIAGNOSTICS IN PROGRESS... ⏳";
 
-    // Client-side DOM/Window data
     document.getElementById('v-height').textContent = window.screen.height;
     document.getElementById('v-width').textContent = window.screen.width;
-    document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "Landscape" : "Portrait";
-    document.getElementById('v-theme').textContent = window.matchMedia('(prefers-color-scheme: dark)').matches ? "Dark" : "Light";
+    document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "LANDSCAPE" : "PORTRAIT";
+    document.getElementById('v-theme').textContent = window.matchMedia('(prefers-color-scheme: dark)').matches ? "DARK" : "LIGHT";
 
-    // Basic User Agent Parsing
-    let os = "Unknown OS", browser = "Unknown Browser";
+    let os = "UNKNOWN OS", browser = "UNKNOWN BROWSER";
     const ua = navigator.userAgent;
-    if (ua.indexOf("Win") != -1) os = "Windows";
-    if (ua.indexOf("Mac") != -1) os = "macOS/Apple";
-    if (ua.indexOf("Linux") != -1) os = "Linux";
-    if (ua.indexOf("Android") != -1) os = "Android";
-    if (ua.indexOf("like Mac") != -1) os = "iOS";
+    if (ua.indexOf("Win") != -1) os = "WINDOWS";
+    if (ua.indexOf("Mac") != -1) os = "MACOS/APPLE";
+    if (ua.indexOf("Linux") != -1) os = "LINUX";
+    if (ua.indexOf("Android") != -1) os = "ANDROID";
+    if (ua.indexOf("like Mac") != -1) os = "IOS";
     
-    if (ua.indexOf("Chrome") != -1) browser = "Chrome";
-    else if (ua.indexOf("Safari") != -1) browser = "Safari";
-    else if (ua.indexOf("Firefox") != -1) browser = "Firefox";
-    else if (ua.indexOf("Edge") != -1) browser = "Edge";
+    if (ua.indexOf("Chrome") != -1) browser = "CHROME";
+    else if (ua.indexOf("Safari") != -1) browser = "SAFARI";
+    else if (ua.indexOf("Firefox") != -1) browser = "FIREFOX";
+    else if (ua.indexOf("Edge") != -1) browser = "EDGE";
     
     document.getElementById('v-os').textContent = os;
     document.getElementById('v-browser').textContent = browser;
 
-    // Network API
     if (navigator.connection) {
-        document.getElementById('v-speed').textContent = navigator.connection.downlink + " mbps";
-        document.getElementById('v-connection').textContent = navigator.connection.effectiveType;
+        document.getElementById('v-speed').textContent = navigator.connection.downlink + " MBPS";
+        document.getElementById('v-connection').textContent = navigator.connection.effectiveType.toUpperCase();
     } else {
-        document.getElementById('v-speed').textContent = "Unknown";
-        document.getElementById('v-connection').textContent = "Standard";
+        document.getElementById('v-speed').textContent = "UNKNOWN";
+        document.getElementById('v-connection').textContent = "STANDARD";
     }
 
-    // Battery API
     if (navigator.getBattery) {
         try {
             const battery = await navigator.getBattery();
             document.getElementById('v-battery').textContent = Math.round(battery.level * 100) + "%";
-            document.getElementById('v-charging').textContent = battery.charging ? "Charging🔌" : "Discharging🔋";
+            document.getElementById('v-charging').textContent = battery.charging ? "CHARGING" : "DISCHARGING";
         } catch(e) {
-             document.getElementById('v-battery').textContent = "Hidden";
-             document.getElementById('v-charging').textContent = "Hidden";
+             document.getElementById('v-battery').textContent = "HIDDEN";
+             document.getElementById('v-charging').textContent = "HIDDEN";
         }
     } else {
-        document.getElementById('v-battery').textContent = "Not Supported";
+        document.getElementById('v-battery').textContent = "NOT SUPPORTED";
         document.getElementById('v-charging').textContent = "N/A";
     }
 
-    // External IP/Geo API Call
     try {
         const response = await fetch('https://ipinfo.io/json');
         const data = await response.json();
         
-        document.getElementById('v-ip').textContent = data.ip || "Hidden";
-        document.getElementById('v-isp').textContent = data.org || "Unknown ISP";
-        document.getElementById('v-city').textContent = `${data.city}, ${data.region}`;
-        document.getElementById('v-zip').textContent = data.postal || "Unknown";
+        document.getElementById('v-ip').textContent = data.ip || "HIDDEN";
+        document.getElementById('v-isp').textContent = (data.org || "UNKNOWN ISP").toUpperCase();
+        document.getElementById('v-city').textContent = `${data.city}, ${data.region}`.toUpperCase();
+        document.getElementById('v-zip').textContent = data.postal || "UNKNOWN";
         
         if(data.loc) {
             const coords = data.loc.split(',');
@@ -146,10 +138,10 @@ document.getElementById('reveal-btn').addEventListener('click', async function()
             document.getElementById('v-lon').textContent = coords[1] + "°";
         }
     } catch (error) {
-        document.getElementById('v-ip').textContent = "Encrypted/Hidden";
-        document.getElementById('v-isp').textContent = "Unknown";
-        document.getElementById('v-city').textContent = "Unknown Location";
+        document.getElementById('v-ip').textContent = "ENCRYPTED";
+        document.getElementById('v-isp').textContent = "UNKNOWN";
+        document.getElementById('v-city').textContent = "UNKNOWN LOCATION";
     }
 
-    this.textContent = "Scan Complete ✅";
+    this.textContent = "DIAGNOSTICS COMPLETE";
 });
