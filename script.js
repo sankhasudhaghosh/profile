@@ -1,22 +1,15 @@
-// --- 1. HERO PARALLAX & FADE LOGIC ---
-const heroBg = document.getElementById('hero-bg');
-const heroOverlay = document.getElementById('hero-overlay');
-
+// --- 1. CINEMATIC HERO BACKGROUND FADE ---
 window.addEventListener('scroll', () => {
-    let scrollPos = window.scrollY;
-    
-    // As you scroll down, the image slowly scales up and fades out
-    if(scrollPos < window.innerHeight) {
-        let opacityCalc = 1 - (scrollPos / window.innerHeight);
-        heroBg.style.opacity = opacityCalc;
-        heroBg.style.transform = `scale(${1 + (scrollPos * 0.0005)})`;
-    } else {
-        heroBg.style.opacity = 0;
+    const scroll = window.scrollY;
+    const heroBg = document.getElementById('hero-bg');
+    if(heroBg) {
+        // Fades out based on scroll depth
+        heroBg.style.opacity = Math.max(1 - scroll / 800, 0.05);
     }
 });
 
 // --- 2. TYPEWRITER EFFECT ---
-const words = ["Strategic Operations.", "Workflow Automation.", "Global Compliance.", "Cross-Functional Leadership."];
+const words = ["> ARCHITECTING SCALE", "> ELIMINATING INEFFICIENCY", "> DRIVING GLOBAL COMPLIANCE", "> ACCELERATING REVENUE"];
 let i = 0; let timer;
 
 function typingEffect() {
@@ -27,7 +20,7 @@ function typingEffect() {
         } else {
             setTimeout(deletingEffect, 2000); return false;
         };
-        timer = setTimeout(loopTyping, 60); 
+        timer = setTimeout(loopTyping, 50); 
     };
     loopTyping();
 }
@@ -48,7 +41,7 @@ function deletingEffect() {
 }
 typingEffect();
 
-// --- 3. THEME TOGGLE LOGIC ---
+// --- 3. THEME TOGGLE & LIVE BINDING ---
 const themeSelect = document.getElementById('theme-toggle');
 
 function applyTheme(theme) {
@@ -58,14 +51,16 @@ function applyTheme(theme) {
     } else {
         document.documentElement.setAttribute('data-theme', theme);
     }
+    // Update live telemetry if active
+    if(isTelemetryActive) updateTelemetry();
 }
 
-const savedTheme = localStorage.getItem('executive-theme') || 'dark'; // Default to dark for premium feel
+const savedTheme = localStorage.getItem('porsche-theme') || 'system';
 themeSelect.value = savedTheme;
 applyTheme(savedTheme);
 
 themeSelect.addEventListener('change', (e) => {
-    localStorage.setItem('executive-theme', e.target.value);
+    localStorage.setItem('porsche-theme', e.target.value);
     applyTheme(e.target.value);
 });
 
@@ -88,76 +83,92 @@ function reveal() {
 window.addEventListener("scroll", reveal);
 reveal();
 
-// --- 5. INTERACTIVE TELEMETRY DASHBOARD ---
+// --- 5. LIVE, REAL-TIME TELEMETRY DASHBOARD ---
+let isTelemetryActive = false;
+let geoDataCache = null;
+
+async function updateTelemetry() {
+    // Basic DOM state
+    document.getElementById('v-height').textContent = window.innerHeight;
+    document.getElementById('v-width').textContent = window.innerWidth;
+    document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "LANDSCAPE" : "PORTRAIT";
+    
+    let currentTheme = document.documentElement.getAttribute('data-theme');
+    document.getElementById('v-theme').textContent = currentTheme ? currentTheme.toUpperCase() : "DARK";
+
+    // OS/Browser Parsing
+    let os = "UNKNOWN OS", browser = "UNKNOWN BROWSER";
+    const ua = navigator.userAgent;
+    if (ua.indexOf("Win") != -1) os = "WINDOWS";
+    if (ua.indexOf("Mac") != -1) os = "MACOS/APPLE";
+    if (ua.indexOf("Linux") != -1) os = "LINUX";
+    if (ua.indexOf("Android") != -1) os = "ANDROID";
+    if (ua.indexOf("like Mac") != -1) os = "IOS";
+    
+    if (ua.indexOf("Chrome") != -1) browser = "CHROME";
+    else if (ua.indexOf("Safari") != -1) browser = "SAFARI";
+    else if (ua.indexOf("Firefox") != -1) browser = "FIREFOX";
+    else if (ua.indexOf("Edge") != -1) browser = "EDGE";
+    
+    document.getElementById('v-os').textContent = os;
+    document.getElementById('v-browser').textContent = browser;
+
+    // Network API
+    if (navigator.connection) {
+        document.getElementById('v-speed').textContent = navigator.connection.downlink + " MBPS";
+        document.getElementById('v-connection').textContent = navigator.connection.effectiveType.toUpperCase();
+    } else {
+        document.getElementById('v-speed').textContent = "UNKNOWN";
+        document.getElementById('v-connection').textContent = "STANDARD";
+    }
+
+    // Battery API
+    if (navigator.getBattery) {
+        try {
+            const battery = await navigator.getBattery();
+            document.getElementById('v-battery').textContent = Math.round(battery.level * 100) + "%";
+            document.getElementById('v-charging').textContent = battery.charging ? "CHARGING" : "DISCHARGING";
+            
+            // Setup live battery listeners if not already done
+            battery.onlevelchange = updateTelemetry;
+            battery.onchargingchange = updateTelemetry;
+        } catch(e) {}
+    }
+
+    // Geo/IP Fetch (Only fetch once to save API calls, cache the result)
+    if (!geoDataCache) {
+        try {
+            const response = await fetch('https://ipinfo.io/json');
+            geoDataCache = await response.json();
+        } catch(e) {
+            geoDataCache = { ip: "ENCRYPTED", org: "UNKNOWN", city: "UNKNOWN", region: "", postal: "N/A" };
+        }
+    }
+    
+    document.getElementById('v-ip').textContent = geoDataCache.ip || "HIDDEN";
+    document.getElementById('v-isp').textContent = (geoDataCache.org || "UNKNOWN ISP").toUpperCase();
+    document.getElementById('v-city').textContent = `${geoDataCache.city}, ${geoDataCache.region}`.toUpperCase();
+    document.getElementById('v-zip').textContent = geoDataCache.postal || "UNKNOWN";
+    
+    if(geoDataCache.loc) {
+        const coords = geoDataCache.loc.split(',');
+        document.getElementById('v-lat').textContent = coords[0] + "°";
+        document.getElementById('v-lon').textContent = coords[1] + "°";
+    }
+}
+
 document.getElementById('reveal-btn').addEventListener('click', async function() {
     const terminal = document.getElementById('terminal-screen');
     terminal.style.display = 'block';
     terminal.classList.add('fade-in');
     
     this.disabled = true;
-    this.textContent = "Diagnostics in Progress... ⏳";
-
-    document.getElementById('v-height').textContent = window.screen.height;
-    document.getElementById('v-width').textContent = window.screen.width;
-    document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "Landscape" : "Portrait";
-
-    let os = "Unknown", browser = "Unknown";
-    const ua = navigator.userAgent;
-    if (ua.indexOf("Win") != -1) os = "Windows";
-    if (ua.indexOf("Mac") != -1) os = "macOS";
-    if (ua.indexOf("Linux") != -1) os = "Linux";
-    if (ua.indexOf("Android") != -1) os = "Android";
-    if (ua.indexOf("like Mac") != -1) os = "iOS";
+    this.textContent = "SYSTEM MONITORING ACTIVE \u25CF";
+    this.classList.add('live-pulse');
     
-    if (ua.indexOf("Chrome") != -1) browser = "Chrome";
-    else if (ua.indexOf("Safari") != -1) browser = "Safari";
-    else if (ua.indexOf("Firefox") != -1) browser = "Firefox";
-    else if (ua.indexOf("Edge") != -1) browser = "Edge";
+    isTelemetryActive = true;
+    await updateTelemetry();
     
-    document.getElementById('v-os').textContent = os;
-    document.getElementById('v-browser').textContent = browser;
-
-    if (navigator.connection) {
-        document.getElementById('v-speed').textContent = navigator.connection.downlink + " Mbps";
-        document.getElementById('v-connection').textContent = navigator.connection.effectiveType.toUpperCase();
-    } else {
-        document.getElementById('v-speed').textContent = "Unknown";
-        document.getElementById('v-connection').textContent = "Standard";
-    }
-
-    if (navigator.getBattery) {
-        try {
-            const battery = await navigator.getBattery();
-            document.getElementById('v-battery').textContent = Math.round(battery.level * 100) + "%";
-            document.getElementById('v-charging').textContent = battery.charging ? "Charging" : "Discharging";
-        } catch(e) {
-             document.getElementById('v-battery').textContent = "Hidden";
-             document.getElementById('v-charging').textContent = "Hidden";
-        }
-    } else {
-        document.getElementById('v-battery').textContent = "Not Supported";
-        document.getElementById('v-charging').textContent = "N/A";
-    }
-
-    try {
-        const response = await fetch('https://ipinfo.io/json');
-        const data = await response.json();
-        
-        document.getElementById('v-ip').textContent = data.ip || "Hidden";
-        document.getElementById('v-isp').textContent = data.org || "Unknown ISP";
-        document.getElementById('v-city').textContent = `${data.city}, ${data.region}`;
-        document.getElementById('v-zip').textContent = data.postal || "Unknown";
-        
-        if(data.loc) {
-            const coords = data.loc.split(',');
-            document.getElementById('v-lat').textContent = coords[0] + "°";
-            document.getElementById('v-lon').textContent = coords[1] + "°";
-        }
-    } catch (error) {
-        document.getElementById('v-ip').textContent = "Encrypted";
-        document.getElementById('v-isp').textContent = "Unknown";
-        document.getElementById('v-city').textContent = "Unknown Location";
-    }
-
-    this.textContent = "Diagnostics Complete ✅";
+    // Bind Real-Time Window Resizing
+    window.addEventListener('resize', updateTelemetry);
 });
