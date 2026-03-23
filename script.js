@@ -3,20 +3,22 @@ window.addEventListener('scroll', () => {
     const scroll = window.scrollY;
     const heroBg = document.getElementById('hero-bg');
     if(heroBg) {
-        // Fades out based on scroll depth
         heroBg.style.opacity = Math.max(1 - scroll / 800, 0.05);
     }
 });
 
-// --- 2. TYPEWRITER EFFECT ---
+// --- 2. TYPEWRITER EFFECT (WITH SAFETY CHECK) ---
 const words = ["> ARCHITECTING SCALE", "> ELIMINATING INEFFICIENCY", "> DRIVING GLOBAL COMPLIANCE", "> ACCELERATING REVENUE"];
 let i = 0; let timer;
 
 function typingEffect() {
+    const typewriterEl = document.getElementById('typewriter');
+    if (!typewriterEl) return; // Safety check
+    
     let word = words[i].split("");
     var loopTyping = function() {
         if (word.length > 0) {
-            document.getElementById('typewriter').innerHTML += word.shift();
+            typewriterEl.innerHTML += word.shift();
         } else {
             setTimeout(deletingEffect, 2000); return false;
         };
@@ -26,11 +28,14 @@ function typingEffect() {
 }
 
 function deletingEffect() {
+    const typewriterEl = document.getElementById('typewriter');
+    if (!typewriterEl) return; // Safety check
+    
     let word = words[i].split("");
     var loopDeleting = function() {
         if (word.length > 0) {
             word.pop();
-            document.getElementById('typewriter').innerHTML = word.join("");
+            typewriterEl.innerHTML = word.join("");
         } else {
             if (words.length > (i + 1)) i++; else i = 0;
             typingEffect(); return false;
@@ -41,7 +46,7 @@ function deletingEffect() {
 }
 typingEffect();
 
-// --- 3. THEME TOGGLE & LIVE BINDING ---
+// --- 3. THEME TOGGLE LOGIC ---
 const themeSelect = document.getElementById('theme-toggle');
 
 function applyTheme(theme) {
@@ -51,21 +56,22 @@ function applyTheme(theme) {
     } else {
         document.documentElement.setAttribute('data-theme', theme);
     }
-    // Update live telemetry if active
     if(isTelemetryActive) updateTelemetry();
 }
 
-const savedTheme = localStorage.getItem('porsche-theme') || 'system';
-themeSelect.value = savedTheme;
-applyTheme(savedTheme);
+if (themeSelect) {
+    const savedTheme = localStorage.getItem('porsche-theme') || 'system';
+    themeSelect.value = savedTheme;
+    applyTheme(savedTheme);
 
-themeSelect.addEventListener('change', (e) => {
-    localStorage.setItem('porsche-theme', e.target.value);
-    applyTheme(e.target.value);
-});
+    themeSelect.addEventListener('change', (e) => {
+        localStorage.setItem('porsche-theme', e.target.value);
+        applyTheme(e.target.value);
+    });
+}
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (themeSelect.value === 'system') applyTheme('system');
+    if (themeSelect && themeSelect.value === 'system') applyTheme('system');
 });
 
 // --- 4. SCROLL REVEAL ANIMATION ---
@@ -83,12 +89,13 @@ function reveal() {
 window.addEventListener("scroll", reveal);
 reveal();
 
-// --- 5. LIVE, REAL-TIME TELEMETRY DASHBOARD ---
+// --- 5. LIVE TELEMETRY DASHBOARD ---
 let isTelemetryActive = false;
 let geoDataCache = null;
 
 async function updateTelemetry() {
-    // Basic DOM state
+    if (!document.getElementById('v-height')) return; // Safety check
+
     document.getElementById('v-height').textContent = window.innerHeight;
     document.getElementById('v-width').textContent = window.innerWidth;
     document.getElementById('v-orientation').textContent = window.innerWidth > window.innerHeight ? "LANDSCAPE" : "PORTRAIT";
@@ -96,7 +103,6 @@ async function updateTelemetry() {
     let currentTheme = document.documentElement.getAttribute('data-theme');
     document.getElementById('v-theme').textContent = currentTheme ? currentTheme.toUpperCase() : "DARK";
 
-    // OS/Browser Parsing
     let os = "UNKNOWN OS", browser = "UNKNOWN BROWSER";
     const ua = navigator.userAgent;
     if (ua.indexOf("Win") != -1) os = "WINDOWS";
@@ -113,7 +119,6 @@ async function updateTelemetry() {
     document.getElementById('v-os').textContent = os;
     document.getElementById('v-browser').textContent = browser;
 
-    // Network API
     if (navigator.connection) {
         document.getElementById('v-speed').textContent = navigator.connection.downlink + " MBPS";
         document.getElementById('v-connection').textContent = navigator.connection.effectiveType.toUpperCase();
@@ -122,20 +127,17 @@ async function updateTelemetry() {
         document.getElementById('v-connection').textContent = "STANDARD";
     }
 
-    // Battery API
     if (navigator.getBattery) {
         try {
             const battery = await navigator.getBattery();
             document.getElementById('v-battery').textContent = Math.round(battery.level * 100) + "%";
             document.getElementById('v-charging').textContent = battery.charging ? "CHARGING" : "DISCHARGING";
             
-            // Setup live battery listeners if not already done
             battery.onlevelchange = updateTelemetry;
             battery.onchargingchange = updateTelemetry;
         } catch(e) {}
     }
 
-    // Geo/IP Fetch (Only fetch once to save API calls, cache the result)
     if (!geoDataCache) {
         try {
             const response = await fetch('https://ipinfo.io/json');
@@ -157,18 +159,20 @@ async function updateTelemetry() {
     }
 }
 
-document.getElementById('reveal-btn').addEventListener('click', async function() {
-    const terminal = document.getElementById('terminal-screen');
-    terminal.style.display = 'block';
-    terminal.classList.add('fade-in');
-    
-    this.disabled = true;
-    this.textContent = "SYSTEM MONITORING ACTIVE \u25CF";
-    this.classList.add('live-pulse');
-    
-    isTelemetryActive = true;
-    await updateTelemetry();
-    
-    // Bind Real-Time Window Resizing
-    window.addEventListener('resize', updateTelemetry);
-});
+const revealBtn = document.getElementById('reveal-btn');
+if (revealBtn) {
+    revealBtn.addEventListener('click', async function() {
+        const terminal = document.getElementById('terminal-screen');
+        terminal.style.display = 'block';
+        terminal.classList.add('fade-in');
+        
+        this.disabled = true;
+        this.textContent = "SYSTEM MONITORING ACTIVE \u25CF";
+        this.classList.add('live-pulse');
+        
+        isTelemetryActive = true;
+        await updateTelemetry();
+        
+        window.addEventListener('resize', updateTelemetry);
+    });
+}
